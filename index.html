@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<title>Warzywniak UK – zamówienie z wysyłką</title>
+<meta name="description" content="Polskie ziemniaki i warzywa z wysyłką kurierem pod drzwi w całym UK.">
+<meta property="og:title" content="Warzywniak UK – zamów z wysyłką">
+<meta property="og:description" content="Ziemniaki Anna, Vineta i box warzyw 14 kg – wysyłka kurierem pod drzwi w całym UK.">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root { --g:#2E6B4F; --g2:#e8f3ec; --t:#1f2a24; --m:#5d6b63; --b:#d7e2db; --r:#b42318; --bg:#f6f8f6; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:-apple-system,"Segoe UI",Roboto,Arial,sans-serif; color:var(--t); background:var(--bg); font-size:16px; line-height:1.45; }
+  .wrap { max-width:620px; margin:0 auto; padding:16px 16px 140px; }
+  header { background:var(--g); color:#fff; padding:22px 16px 18px; }
+  header .in { max-width:620px; margin:0 auto; }
+  header h1 { margin:0; font-size:24px; }
+  header p { margin:4px 0 0; opacity:.9; font-size:15px; }
+  .info { background:#fff7e0; border:1px solid #f0d58a; border-radius:10px; padding:12px 14px; margin:16px 0; font-size:15px; }
+  .info b { display:block; }
+  h2 { font-size:18px; margin:24px 0 10px; }
+  .card { background:#fff; border:1px solid var(--b); border-radius:12px; padding:14px; margin-bottom:10px; display:flex; align-items:center; gap:12px; }
+  .card .opis { flex:1; min-width:0; }
+  .card .n { font-weight:600; font-size:16px; }
+  .card .s { color:var(--m); font-size:14px; }
+  .card .c { font-size:14px; margin-top:2px; }
+  .card.on { border-color:var(--g); box-shadow:0 0 0 1px var(--g) inset; }
+  .step { display:flex; align-items:center; gap:6px; }
+  .step button { width:40px; height:40px; border-radius:50%; border:1px solid var(--b); background:#fff; font-size:22px; line-height:1; color:var(--g); cursor:pointer; }
+  .step button:active { background:var(--g2); }
+  .step output { width:28px; text-align:center; font-weight:600; font-size:18px; }
+  label { display:block; font-size:14px; color:var(--m); margin:12px 0 4px; }
+  input, textarea { width:100%; padding:12px; font-size:16px; border:1px solid var(--b); border-radius:8px; background:#fff; color:var(--t); font-family:inherit; }
+  input:focus, textarea:focus { outline:2px solid var(--g); border-color:var(--g); }
+  .row2 { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .err { color:var(--r); font-size:14px; margin-top:4px; min-height:0; }
+  .sum { background:#fff; border:1px solid var(--b); border-radius:12px; padding:14px; margin-top:20px; }
+  .line { display:flex; justify-content:space-between; gap:10px; padding:4px 0; font-size:15px; }
+  .line.tot { border-top:1px solid var(--b); margin-top:6px; padding-top:10px; font-size:19px; font-weight:700; }
+  .muted { color:var(--m); font-size:14px; }
+  .bar { position:fixed; left:0; right:0; bottom:0; background:#fff; border-top:1px solid var(--b); padding:10px 16px calc(10px + env(safe-area-inset-bottom)); }
+  .bar .in { max-width:620px; margin:0 auto; display:flex; align-items:center; gap:12px; }
+  .bar .kw { flex:1; }
+  .bar .kw small { display:block; color:var(--m); font-size:13px; }
+  .bar .kw strong { font-size:22px; }
+  .btn { background:var(--g); color:#fff; border:0; border-radius:10px; padding:14px 18px; font-size:16px; font-weight:600; cursor:pointer; }
+  .btn[disabled] { opacity:.6; cursor:default; }
+  .hp { position:absolute; left:-5000px; }
+  #ok { display:none; }
+  .big { font-size:34px; font-weight:800; color:var(--g); margin:4px 0 0; }
+  .bank { background:#fff; border:2px solid var(--g); border-radius:12px; padding:6px 14px; margin:14px 0; }
+  .bank .r { display:flex; align-items:center; justify-content:space-between; gap:10px; padding:10px 0; border-bottom:1px solid var(--b); }
+  .bank .r:last-child { border-bottom:0; }
+  .bank .k { color:var(--m); font-size:13px; }
+  .bank .v { font-weight:700; font-size:17px; word-break:break-all; }
+  .cp { border:1px solid var(--g); color:var(--g); background:#fff; border-radius:8px; padding:7px 12px; font-size:14px; cursor:pointer; white-space:nowrap; }
+  .cp.done { background:var(--g); color:#fff; }
+  .note { background:var(--g2); border-radius:10px; padding:12px 14px; font-size:15px; margin:12px 0; }
+</style>
+</head>
+<body>
+<header><div class="in">
+  <h1>Warzywniak UK</h1>
+  <p>Polskie ziemniaki i warzywa z wysyłką kurierem pod drzwi w całym UK</p>
+</div></header>
+
+<div class="wrap">
+  <div id="form">
+    <div class="info" id="infoTop"></div>
+
+    <h2>1. Wybierz produkty</h2>
+    <div id="produkty"></div>
+    <div class="err" id="eBoxy"></div>
+
+    <h2>2. Dane do wysyłki</h2>
+    <label for="imie">Imię i nazwisko</label>
+    <input id="imie" autocomplete="name" placeholder="Anna Kowalska">
+    <div class="err" id="e-imie"></div>
+    <label for="email">Adres e-mail (wyślemy na niego potwierdzenie)</label>
+    <input id="email" type="email" autocomplete="email" inputmode="email" placeholder="anna@gmail.com">
+    <div class="err" id="e-email"></div>
+    <label for="telefon">Telefon</label>
+    <input id="telefon" type="tel" autocomplete="tel" placeholder="07700 900123">
+    <div class="err" id="e-telefon"></div>
+    <label for="ulica">Ulica i numer domu/mieszkania</label>
+    <input id="ulica" autocomplete="address-line1" placeholder="12 Oak Street">
+    <div class="err" id="e-ulica"></div>
+    <div class="row2">
+      <div>
+        <label for="miasto">Miasto</label>
+        <input id="miasto" autocomplete="address-level2" placeholder="Leeds">
+        <div class="err" id="e-miasto"></div>
+      </div>
+      <div>
+        <label for="postcode">Postcode</label>
+        <input id="postcode" autocomplete="postal-code" placeholder="LS1 4AP" style="text-transform:uppercase">
+        <div class="err" id="e-postcode"></div>
+      </div>
+    </div>
+    <label for="uwagi">Uwagi (nieobowiązkowe)</label>
+    <textarea id="uwagi" rows="2" placeholder="np. kod do bramy"></textarea>
+    <input class="hp" id="www" tabindex="-1" autocomplete="off" aria-hidden="true">
+
+    <h2>3. Podsumowanie</h2>
+    <div class="sum" id="sum"></div>
+    <p class="muted" id="infoPay"></p>
+    <div class="err" id="eSend"></div>
+  </div>
+
+  <div id="ok">
+    <h2 style="margin-top:8px">Dziękujemy, <span id="okImie"></span>! Zamówienie przyjęte.</h2>
+    <div class="muted">Kwota do zapłaty:</div>
+    <div class="big" id="okKwota"></div>
+    <div class="sum" id="okSum" style="margin-top:12px"></div>
+    <h2>Zapłać przelewem</h2>
+    <div class="bank" id="bank"></div>
+    <div class="note" id="okInfo"></div>
+    <p class="muted" id="okMail"></p>
+    <p class="muted">Zrób zrzut ekranu tej strony, żeby mieć dane do przelewu pod ręką.</p>
+  </div>
+</div>
+
+<div class="bar" id="bar"><div class="in">
+  <div class="kw"><small id="barSmall">Do zapłaty</small><strong id="barKwota">£0.00</strong></div>
+  <button class="btn" id="send">Zamawiam</button>
+</div></div>
+
+<script>
+const KONFIG = {"firma": {"nazwa": "Warzywniak UK", "odbiorca": "WarzywniakUK LTD", "sortCode": "30-54-66", "nrKonta": "22957263", "wysylka": 6, "start": "Zamówienia realizujemy od 8/9 listopada.", "platnosc": "Paczkę pakujemy i wysyłamy dopiero po zaksięgowaniu przelewu na konto firmowe."}, "produkty": [{"id": "anna", "nazwa": "Ziemniaki Anna", "opis": "14 kg", "cena": 20}, {"id": "vineta", "nazwa": "Ziemniaki Vineta", "opis": "14 kg", "cena": 20}, {"id": "warzywa", "nazwa": "Box warzyw", "opis": "14 kg – marchew, burak, cebula", "cena": 20}], "max": 10};
+const API = "https://script.google.com/macros/s/AKfycbzZNvzlKLMlSDKNAqYE_DikokyUtYShru-mf5TaYjvtDqFu6ftw6Mu_YcyJx70kXf0/exec";
+const F = KONFIG.firma, P = KONFIG.produkty, MAX = KONFIG.max;
+const il = {};
+const $ = id => document.getElementById(id);
+const fmt = n => '£' + n.toFixed(2);
+
+$('infoTop').innerHTML = '<b>' + F.start + '</b>' + F.platnosc +
+  ' Każdy box to osobna paczka, wysyłka kurierem pod drzwi: ' + fmt(F.wysylka) + ' za box.';
+$('infoPay').textContent = 'Płatność przelewem. Po kliknięciu „Zamawiam” zobaczysz dokładną kwotę i dane do przelewu. ' + F.platnosc;
+
+P.forEach(p => {
+  il[p.id] = 0;
+  const d = document.createElement('div');
+  d.className = 'card'; d.id = 'c-' + p.id;
+  d.innerHTML = '<div class="opis"><div class="n"></div><div class="s"></div><div class="c"></div></div>' +
+    '<div class="step"><button type="button" aria-label="mniej">−</button><output>0</output>' +
+    '<button type="button" aria-label="więcej">+</button></div>';
+  d.querySelector('.n').textContent = p.nazwa;
+  d.querySelector('.s').textContent = p.opis;
+  d.querySelector('.c').textContent = fmt(p.cena) + ' + wysyłka ' + fmt(F.wysylka);
+  const [minus, plus] = d.querySelectorAll('button');
+  minus.onclick = () => zmien(p.id, -1);
+  plus.onclick = () => zmien(p.id, 1);
+  $('produkty').appendChild(d);
+});
+
+function zmien(id, o) {
+  il[id] = Math.max(0, Math.min(MAX, il[id] + o));
+  const c = $('c-' + id);
+  c.querySelector('output').textContent = il[id];
+  c.classList.toggle('on', il[id] > 0);
+  $('eBoxy').textContent = '';
+  licz();
+}
+
+function policz() {
+  let boxy = 0, towar = 0; const poz = [];
+  P.forEach(p => { const n = il[p.id]; if (n > 0) { boxy += n; towar += n * p.cena; poz.push([n + ' × ' + p.nazwa + ' ' + p.opis, n * p.cena]); } });
+  const wys = boxy * F.wysylka;
+  return { boxy, towar, wys, razem: towar + wys, poz };
+}
+
+function tabela(w) {
+  if (!w.boxy) return '<div class="muted">Nie wybrano jeszcze żadnego boxa.</div>';
+  return w.poz.map(r => '<div class="line"><span>' + r[0] + '</span><span>' + fmt(r[1]) + '</span></div>').join('') +
+    '<div class="line"><span>Wysyłka kurierem pod drzwi: ' + w.boxy + ' × ' + fmt(F.wysylka) + '</span><span>' + fmt(w.wys) + '</span></div>' +
+    '<div class="line tot"><span>Razem do zapłaty</span><span>' + fmt(w.razem) + '</span></div>';
+}
+
+function licz() {
+  const w = policz();
+  $('sum').innerHTML = tabela(w);
+  $('barKwota').textContent = fmt(w.razem);
+  $('barSmall').textContent = w.boxy ? 'Do zapłaty (' + w.boxy + (w.boxy === 1 ? ' box' : (w.boxy < 5 ? ' boxy' : ' boxów')) + ')' : 'Do zapłaty';
+}
+licz();
+
+const POLA = ['imie', 'email', 'telefon', 'ulica', 'miasto', 'postcode'];
+POLA.forEach(id => $(id).addEventListener('input', () => { $('e-' + id).textContent = ''; }));
+
+function sprawdz() {
+  let ok = true;
+  const v = id => $(id).value.trim();
+  const blad = (id, t) => { $('e-' + id).textContent = t; if (ok) $(id).focus(); ok = false; };
+  if (!policz().boxy) { $('eBoxy').textContent = 'Wybierz przynajmniej jeden box (przycisk +).'; $('produkty').scrollIntoView({ behavior: 'smooth' }); ok = false; }
+  if (v('imie').length < 3) blad('imie', 'Wpisz imię i nazwisko.');
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v('email'))) blad('email', 'Wpisz poprawny adres e-mail.');
+  if (v('telefon').replace(/\D/g, '').length < 10) blad('telefon', 'Wpisz poprawny numer telefonu, np. 07700 900123.');
+  if (!v('ulica')) blad('ulica', 'Wpisz ulicę i numer domu.');
+  if (!v('miasto')) blad('miasto', 'Wpisz miasto.');
+  if (!/^[A-Za-z]{1,2}[0-9][A-Za-z0-9]? ?[0-9][A-Za-z]{2}$/.test(v('postcode').replace(/\s+/g, ' '))) blad('postcode', 'Wpisz poprawny postcode, np. LS1 4AP.');
+  return ok;
+}
+
+$('send').onclick = () => {
+  $('eSend').textContent = '';
+  if (!sprawdz()) return;
+  const btn = $('send'); btn.disabled = true; btn.textContent = 'Wysyłam…';
+  const d = { ilosci: Object.assign({}, il), www: $('www').value };
+  POLA.concat(['uwagi']).forEach(id => d[id] = $(id).value);
+  fetch(API, { method: 'POST', body: JSON.stringify(d), redirect: 'follow', credentials: 'omit' })
+    .then(res => res.json())
+    .then(r => {
+      if (!r || !r.ok) { pokazBlad(r && r.blad ? r.blad : 'Coś poszło nie tak. Spróbuj ponownie.'); return; }
+      pokazOk(r);
+    })
+    .catch(() => pokazBlad('Brak połączenia albo błąd serwera. Spróbuj ponownie za chwilę.'));
+};
+
+function pokazBlad(t) {
+  $('eSend').textContent = t;
+  const btn = $('send'); btn.disabled = false; btn.textContent = 'Zamawiam';
+  $('eSend').scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function pokazOk(r) {
+  $('form').style.display = 'none'; $('bar').style.display = 'none'; $('ok').style.display = 'block';
+  $('okImie').textContent = r.imie.split(' ')[0];
+  $('okKwota').textContent = fmt(r.razem);
+  $('okSum').innerHTML = tabela({ boxy: r.boxy, towar: r.towar, wys: r.wysylka, razem: r.razem,
+    poz: r.pozycje.map(p => [p.n + ' × ' + p.nazwa, p.suma]) });
+  const rows = [['Kwota', fmt(r.razem)], ['Tytuł przelewu (reference)', r.tytul], ['Odbiorca', F.odbiorca],
+                ['Sort code', F.sortCode], ['Numer konta', F.nrKonta]];
+  $('bank').innerHTML = rows.map((x, i) => '<div class="r"><div><div class="k">' + x[0] + '</div><div class="v">' + x[1] +
+    '</div></div><button class="cp" data-i="' + i + '">Kopiuj</button></div>').join('');
+  $('bank').querySelectorAll('.cp').forEach(b => b.onclick = () => {
+    const val = rows[b.dataset.i][1];
+    const done = () => { b.textContent = 'Skopiowano'; b.classList.add('done'); setTimeout(() => { b.textContent = 'Kopiuj'; b.classList.remove('done'); }, 1800); };
+    const fallback = () => { const t = document.createElement('textarea'); t.value = val; t.style.position = 'absolute'; t.style.left = '-9999px';
+      document.body.appendChild(t); t.select(); try { document.execCommand('copy'); } catch (e) {} document.body.removeChild(t); done(); };
+    if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(val).then(done, fallback); else fallback();
+  });
+  $('okInfo').innerHTML = '<b>' + F.platnosc + '</b><br>' + F.start;
+  $('okMail').textContent = r.mailOk ? 'Wysłaliśmy też potwierdzenie na ' + r.email + ' (sprawdź folder Spam, jeśli go nie widzisz).'
+                                     : 'Nie udało się wysłać e-maila z potwierdzeniem – zrób zrzut ekranu tej strony.';
+  window.scrollTo(0, 0);
+}
+</script>
+</body>
+</html>
